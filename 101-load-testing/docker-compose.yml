@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  influxdb:
+    image: influxdb:1.2-alpine
+    volumes:
+      - ./conf/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+      - influxdb:/var/lib/influxdb
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "2003:2003"
+    networks:
+      testing:
+        aliases:
+          - db
+
+  grafana:
+    image: grafana/grafana:4.1.1
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_BASIC_ENABLED=true
+    links:
+      - influxdb
+    networks:
+      testing:
+
+volumes:
+  grafana:
+  influxdb:
+
+networks:
+  testing:

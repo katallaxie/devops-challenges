@@ -1,0 +1,8 @@
+{
+  "name": "influxdb",
+  "type": "influxdb",
+  "url": "http://db:8086",
+  "database": "graphite",
+  "access": "proxy",
+  "basicAuth": false
+}
