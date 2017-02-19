@@ -11,6 +11,7 @@
 ## Challenges
 
 * 101 - Local Load Testing (InfluxDB, Grafana, Gatling)
+* 102 - Docker Swarm
 
 # License
 [MIT](/LICENSE)

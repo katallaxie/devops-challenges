@@ -1,8 +1,8 @@
-# 101 -Load Testing 
+# Challenge 101 - Load Testing
 
 > this is work in progress, there is a sample test provided
 
-## Goal
+## Challenge
 
 What we want to do in this tutorial is to setup a high-performance, and customizable setup for doing local load tests.
 We are going to use the following technologies
