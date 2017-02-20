@@ -12,3 +12,6 @@ What we want to do in this challenge is, to built a production-ready Docker Swar
 * [Docker Machine](https://github.com/scaleway/docker-machine-driver-scaleway)
 * [etc](https://github.com/coreos/etcd)
 * [Scaleway](https://www.scaleway.com)
+
+# Notes
+ssh-add ~/.ssh/scaleway_rsa
