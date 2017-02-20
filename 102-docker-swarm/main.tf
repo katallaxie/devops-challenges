@@ -40,7 +40,7 @@ module "worker" {
   swarm_manager = "${module.manager.private_ip}"
 }
 
-resource "null_resource" "configure-network" {
+resource "null_resource" "configure_proxy" {
   connection {
     type        = "ssh"
     user        = "root"
@@ -50,22 +50,10 @@ resource "null_resource" "configure-network" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker network create --driver overlay proxy",
-    ]
-  }
-}
-
-resource "null_resource" "configure-proxy" {
-  connection {
-    type        = "ssh"
-    user        = "root"
-    host        = "${module.worker.public_ip}"
-    private_key = "${file("${path.root}/${var.private_key}")}"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "docker service create --name proxy -p 80:80 -p 443:443 -p 8080:8080 --network proxy -e MODE=swarm vfarcic/docker-flow-proxy",
+      "docker network create --driver overlay --opt encrypted proxy",
+      "docker service create --name swarm-listener --network proxy --mount 'type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock' -e DF_NOTIFY_CREATE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/reconfigure -e DF_NOTIFY_REMOVE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/remove --constraint 'node.role==manager' vfarcic/docker-flow-swarm-listener",
+      "docker service create --name proxy -p 80:80 -p 443:443 --network proxy -e MODE=swarm -e LISTENER_ADDRESS=swarm-listener vfarcic/docker-flow-proxy",
+      "docker service scale prox ${vars.swarm_workers}",
     ]
   }
 }
