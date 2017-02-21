@@ -11,7 +11,7 @@
 ## Challenges
 
 * 101 - Local Load Testing (InfluxDB, Grafana, Gatling)
-* 102 - Docker Swarm
+* 102 - Docker Swarm on Scaleway (Terraform, Docker Swarm, HAProxy)
 
 # License
 [MIT](/LICENSE)
