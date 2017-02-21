@@ -39,6 +39,16 @@ resource "scaleway_server" "worker" {
       "ssh-keyscan ${var.swarm_manager} > ~/.ssh/known_hosts",
       "docker swarm join --token $(ssh -i /tmp/scaleway_rsa root@${var.swarm_manager} 'docker swarm join-token -q worker') ${var.swarm_manager}:2377",
       "rm /tmp/${var.private_key}",
+      "apt-get install ufw",
+      "ufw allow 22/tcp",
+      "ufw allow 2376/tcp",
+      "ufw allow 7946/tcp",
+      "ufw allow 7946/udp",
+      "ufw allow 4789/udp",
+      "ufw allow 80/tcp",
+      "ufw allow 443/tcp",
+      "echo 'y' | ufw enable",
+      "systemctl restart docker",
     ]
   }
 }

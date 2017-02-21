@@ -36,6 +36,17 @@ resource "scaleway_server" "manager" {
   provisioner "remote-exec" {
     inline = [
       "docker swarm init --advertise-addr ${self.private_ip} --listen-addr ${self.private_ip}",
+      "apt-get install ufw",
+      "ufw allow 22/tcp",
+      "ufw allow 2376/tcp",
+      "ufw allow 2377/tcp",
+      "ufw allow 7946/tcp",
+      "ufw allow 7946/udp",
+      "ufw allow 4789/udp",
+      "ufw allow 80/tcp",
+      "ufw allow 443/tcp",
+      "echo 'y' | ufw enable",
+      "systemctl restart docker",
     ]
   }
 }
