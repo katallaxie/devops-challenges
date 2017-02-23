@@ -1,4 +1,5 @@
 variable "k8stoken" {}
+variable "weave_password" {}
 
 provider "scaleway" {
   region = "${var.region}"
@@ -18,12 +19,13 @@ module "master" {
 
   security_group = "${module.security_group.k8s_master}"
 
-  type        = "${var.type}"
-  image       = "${data.scaleway_image.docker.id}"
-  k8s_masters = "${var.k8s_masters}"
-  k8s_token   = "${var.k8stoken}"
-  enable_ipv6 = "${var.enable_ipv6}"
-  dynamic_ip  = "${var.dynamic_ip}"
+  type           = "${var.type}"
+  image          = "${data.scaleway_image.docker.id}"
+  k8s_masters    = "${var.k8s_masters}"
+  k8s_token      = "${var.k8stoken}"
+  enable_ipv6    = "${var.enable_ipv6}"
+  dynamic_ip     = "${var.dynamic_ip}"
+  weave_password = "${var.weave_password}"
 
   private_key = "${var.private_key}"
 }

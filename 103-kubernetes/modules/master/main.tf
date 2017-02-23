@@ -6,6 +6,7 @@ variable "image" {}
 variable "type" {}
 variable "security_group" {}
 variable "k8s_token" {}
+variable "weave_password" {}
 
 resource "scaleway_ip" "k8s-master_ip" {
   server = "${scaleway_server.k8s-master.id}"
@@ -39,13 +40,22 @@ resource "scaleway_server" "k8s-master" {
     destination = "/tmp/k8s.sh"
   }
 
+  provisioner "file" {
+    source      = "${path.root}/config/weave-daemonset.yaml"
+    destination = "/tmp/weave-daemonset.yaml"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/k8s.sh && /tmp/k8s.sh",
       "kubeadm init --token ${var.k8s_token} --api-advertise-addresses ${self.private_ip}",
-      "kubectl apply -f https://git.io/weave-kube",
+      "printf '${var.weave_password}' > /tmp/weave-passwd",
+      "kubectl create secret -n kube-system generic weave-passwd --from-file=/tmp/weave-passwd",
+      "kubectl apply -f /tmp/weave-daemonset.yaml",
       "kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml",
       "apt-get install ufw",
+      "ufw allow proto udp from any to any port 500",
+      "ufw allow proto udp from any to any port 4500",
       "ufw allow 22/tcp",
       "ufw allow 6783/tcp",
       "ufw allow 6783:6784/udp",

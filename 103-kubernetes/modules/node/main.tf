@@ -40,6 +40,8 @@ resource "scaleway_server" "node" {
       "kubeadm join --token ${var.k8s_token} ${var.k8s_master}",
       "docker swarm init --advertise-addr ${self.private_ip} --listen-addr ${self.private_ip}",
       "apt-get install ufw",
+      "ufw allow proto udp from any to any port 500",
+      "ufw allow proto udp from any to any port 4500",
       "ufw allow 22/tcp",
       "ufw allow 6783/tcp",
       "ufw allow 6783:6784/udp",

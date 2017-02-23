@@ -21,21 +21,29 @@ What we want to do in this challenge is, to built a somehow production-ready Kub
 
 > on OSX you can do a `brew install terraform` to install [Terraform](terraform.io)
 
-First we need to create a token to be used to join the nodes to the cluser
+First we need to create a token to be used to join the nodes to the cluster
 
 ```
 python -c 'import random; print "%0x.%0x" % (random.SystemRandom().getrandbits(3*8), random.SystemRandom().getrandbits(8*8))'
 ```
+
+and a password for Weave
+
+```
+pwgen -s 32
+```
+
+before we can get the confi running.
 
 ```
 # get all modules
 terraform get
 
 # plan the deployment
-terraform plan -var "k8stoken=<token>"
+terraform plan -var "k8stoken=<token> - var "weave_password=<password>"
 
 # apply to Scaleway
-terraform apply -var "k8stoken=<token>"
+terraform apply -var "k8stoken=<token> - var "weave_password=<password>""
 ```
 
 ## Notes
