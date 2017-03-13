@@ -13,6 +13,16 @@ variable "swarm_managers" {
   description = "Number of Swarm managers to launch"
 }
 
+variable "swarm_domain" {
+  default     = "traefik"
+  description = "Domain to be used with traefik"
+}
+
+variable "swarm_network" {
+  default     = "proxy"
+  description = "Default network for communication"
+}
+
 variable "enable_ipv6" {
   default     = true
   description = "Enabling IPv6"

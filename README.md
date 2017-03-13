@@ -13,6 +13,7 @@
 * 101 - Local Load Testing (InfluxDB, Grafana, Gatling)
 * 102 - Docker Swarm on Scaleway (Terraform, Docker Swarm, HAProxy)
 * 103 - Kubernetes Cluster on Scaleway (Terraform, Kubernetes, Weave)
+* 104 - Advanced Docker Swarm on Scaleway (Terraform, Swarm, Traefik, Portainer, Swarm Gui, Watchtower)
 
 # License
 [MIT](/LICENSE)
