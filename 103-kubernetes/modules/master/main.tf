@@ -59,6 +59,7 @@ resource "scaleway_server" "k8s-master" {
       "ufw allow 22/tcp",
       "ufw allow 6783/tcp",
       "ufw allow 6783:6784/udp",
+      "ufw allow to any from any proto esp",
       "echo 'n' | ufw enable",
       "systemctl restart docker",
     ]

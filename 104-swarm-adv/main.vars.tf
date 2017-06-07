@@ -23,6 +23,16 @@ variable "swarm_network" {
   description = "Default network for communication"
 }
 
+variable "sync_network" {
+  default     = "sync"
+  description = "Default network for syncing"
+}
+
+variable "sync_shared_secret" {
+  default     = "YOUR_SHARED_SECRET"
+  description = "Default secret for syncing"
+}
+
 variable "enable_ipv6" {
   default     = true
   description = "Enabling IPv6"

@@ -36,11 +36,11 @@ resource "scaleway_security_group_rule" "accept_udp" {
 resource "scaleway_security_group_rule" "drop_tcp" {
   security_group = "${scaleway_security_group.swarm.id}"
 
-  action    = "accept"
+  action    = "drop"
   direction = "inbound"
 
   # NOTE this is just a guess - might not work for you.
-  ip_range = "10.0.0.0/8"
+  ip_range = "0.0.0.0/0"
   protocol = "TCP"
   port     = "${element(var.swarm_ports, count.index)}"
   count    = "${length(var.swarm_ports)}"
@@ -51,11 +51,11 @@ resource "scaleway_security_group_rule" "drop_tcp" {
 resource "scaleway_security_group_rule" "drop_udp" {
   security_group = "${scaleway_security_group.swarm.id}"
 
-  action    = "accept"
+  action    = "drop"
   direction = "inbound"
 
   # NOTE this is just a guess - might not work for you.
-  ip_range = "10.0.0.0/8"
+  ip_range = "0.0.0.0/0"
   protocol = "UDP"
   port     = "${element(var.swarm_ports, count.index)}"
   count    = "${length(var.swarm_ports)}"

@@ -24,20 +24,22 @@ module "manager" {
   enable_ipv6    = "${var.enable_ipv6}"
   dynamic_ip     = "${var.dynamic_ip}"
 
-  private_key = "${var.private_key}"
+  private_key    = "${var.private_key}"
+  sync_network   = "${var.sync_network}"
 }
 
 module "worker" {
   source = "./modules/worker"
 
-  security_group = "${module.security_group.id}"
+  security_group   = "${module.security_group.id}"
 
-  type          = "${var.type}"
-  image         = "${data.scaleway_image.docker.id}"
-  swarm_workers = "${var.swarm_workers}"
-  enable_ipv6   = "${var.enable_ipv6}"
-  dynamic_ip    = "${var.dynamic_ip}"
+  type             = "${var.type}"
+  image            = "${data.scaleway_image.docker.id}"
+  swarm_workers    = "${var.swarm_workers}"
+  enable_ipv6      = "${var.enable_ipv6}"
+  dynamic_ip       = "${var.dynamic_ip}"
 
-  private_key   = "${var.private_key}"
-  swarm_manager = "${module.manager.private_ip}"
+  private_key      = "${var.private_key}"
+  swarm_manager    = "${module.manager.private_ip}"
+  sync_shared_secret = "${var.sync_shared_secret}"
 }

@@ -17,6 +17,8 @@ What we want to do in this challenge is, to built a production-ready Docker Swar
 * [Portainer](https://github.com/portainer/portainer)
 * [Watchtower](https://github.com/v2tec/watchtower)
 * [Docker Swarm GUI](https://github.com/JulienBreux/docker-swarm-gui)
+* [Resilio](https://www.resilio.com/individuals/)
+* [Local Persist Volume Plugin for Docker](https://github.com/CWSpear/local-persist)
 
 > we need the private key `scaleway_rsa` you use in Scaleway
 
@@ -25,6 +27,13 @@ What we want to do in this challenge is, to built a production-ready Docker Swar
 > most thing can be configured in `main.vars.tf`
 
 > on OSX you can do a `brew install terraform` to install [Terraform](terraform.io)
+
+```
+# generate secret for Resilio Sync in main.vars.tf
+docker run resilio/sync --generate-secret 2>/dev/null
+```
+
+## Deploy
 
 ```
 # get all modules

@@ -50,6 +50,7 @@ resource "scaleway_server" "node" {
       "ufw allow 443/tcp",
       "ufw allow 8080/tcp",
       "ufw allow 8443/tcp",
+      "ufw allow to any from any proto esp",
       "echo 'y' | ufw enable",
       "systemctl restart docker",
     ]
