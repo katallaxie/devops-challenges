@@ -43,6 +43,16 @@ variable "traefik_domain" {
   description = "Default domain for traefik"
 }
 
+variable "influx_username" {
+  default     = "admin"
+  description = "Username to be used with influx"
+}
+
+variable "influx_password" {
+  default     = "password"
+  description = "Username to be used with influx"
+}
+
 variable "enable_ipv6" {
   default     = true
   description = "Enabling IPv6"

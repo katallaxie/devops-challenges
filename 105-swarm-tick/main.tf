@@ -29,6 +29,8 @@ module "manager" {
   traefik_email       = "${var.traefik_email}",
   traefik_domain      = "${var.traefik_domain}",
   sync_shared_secret = "${var.sync_shared_secret}"
+  influx_username     = "${var.influx_username}",
+  influx_password     = "${var.influx_password}"
 }
 
 module "worker" {

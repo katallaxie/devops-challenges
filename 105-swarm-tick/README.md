@@ -1,4 +1,4 @@
-# Challenge 104 - Advanced Docker Swarm
+# Challenge 105 - Building a Docker Swarm with TICK Stack
 
 > this is work in progress, there is a sample test provided
 
@@ -6,7 +6,7 @@
 
 ## Challenge
 
-> we are going to built an advanced [Docker Swarm](https://www.docker.com/products/docker-swarm) on [Scaleway](https://www.scaleway.com).
+> we are going to built an advanced [Docker Swarm](https://www.docker.com/products/docker-swarm) on [Scaleway](https://www.scaleway.com) with the [TICK](https://www.influxdata.com/products/open-source/#kapacitor) Stack.
 
 What we want to do in this challenge is, to built a production-ready Docker Swarm. Which means, we want to have everything secured and ready to roll-out services.
 
@@ -19,9 +19,11 @@ What we want to do in this challenge is, to built a production-ready Docker Swar
 * [Docker Swarm GUI](https://github.com/JulienBreux/docker-swarm-gui)
 * [Resilio](https://www.resilio.com/individuals/)
 * [Local Persist Volume Plugin for Docker](https://github.com/CWSpear/local-persist)
-* [Grafana](https://grafana.com/)
+
+* [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/)
 * [InfluxDB](https://www.influxdata.com/)
-* [cAdvisor](https://github.com/google/cadvisor)
+* [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/)
+* [Kapacitor](https://www.influxdata.com/products/open-source/#kapacitor)
 
 > we need the private key `scaleway_rsa` you use in Scaleway
 

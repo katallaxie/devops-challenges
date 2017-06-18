@@ -11,6 +11,12 @@ variable "traefik_email" {}
 variable "traefik_domain" {}
 variable "sync_shared_secret" {}
 variable "monitor_network" {}
+variable "influx_username" {}
+variable "influx_password" {}
+
+resource "scaleway_ip" "manager" {
+  server = "${scaleway_server.manager.id}"
+}
 
 data "template_file" "sync_config" {
   template = "${file("${path.root}/files/sync.conf.tpl")}"
@@ -20,8 +26,22 @@ data "template_file" "sync_config" {
   }
 }
 
-resource "scaleway_ip" "manager" {
-  server = "${scaleway_server.manager.id}"
+data "template_file" "telegraf_config" {
+  template = "${file("${path.root}/files/telegraf.conf.tpl")}"
+
+  vars {
+    username  = "${var.influx_username}"
+    password  = "${var.influx_password}"
+  }
+}
+
+data "template_file" "kapacitor_config" {
+  template = "${file("${path.root}/files/kapacitor.conf.tpl")}"
+
+  vars {
+    username  = "${var.influx_username}"
+    password  = "${var.influx_password}"
+  }
 }
 
 data "template_file" "traefik_config" {
@@ -108,12 +128,12 @@ resource "scaleway_server" "manager" {
       "docker service create --detach=false --restart-delay 30s --restart-condition on-failure --name sync --mode global --network ${var.sync_network} --mount type=bind,source=/data,destination=/mnt/sync resilio/sync",
       "mkdir -p /data/folders/swarm/portainer",
       "mkdir -p /data/folders/swarm/influx",
-      "mkdir -p /data/folders/swarm/grafana",
+      "mkdir -p /data/folders/swarm/chronograf",
       "touch /data/folders/swarm/acme.json",
       "chmod 0600 /data/folders/swarm/acme.json",
       "docker volume create --name portainer --driver local-persist -o mountpoint=/data/folders/swarm/portainer",
       "docker volume create --name influx --driver local-persist -o mountpoint=/data/folders/swarm/influx",
-      "docker volume create --name grafana --driver local-persist -o mountpoint=/data/folders/swarm/grafana",
+      "docker volume create --name chronograf --driver local-persist -o mountpoint=/data/folders/swarm/chronograf",
     ]
   }
 
@@ -122,14 +142,27 @@ resource "scaleway_server" "manager" {
     destination = "/data/folders/swarm/traefik.toml"
   }
 
+  provisioner "file" {
+    content     = "${data.template_file.telegraf_config.rendered}"
+    destination = "/data/folders/swarm/telegraf.conf"
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.kapacitor_config.rendered}"
+    destination = "/data/folders/swarm/kapacitor.conf"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "docker service create --detach=false --publish 9000:9000 --label traefik.port=9000 --label traefik.enable=true --label traefik.backend=portainer --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name portainer --mode replicated --replicas 1 --network ${var.swarm_network} --mount type=volume,src=portainer,dst=/data --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock portainer/portainer -H unix:///var/run/docker.sock",
+      "docker service create --detach=false --label traefik.port=9000 --label traefik.enable=true --label traefik.backend=portainer --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name portainer --mode replicated --replicas 1 --network proxy --mount type=volume,src=portainer,dst=/data --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock portainer/portainer -H unix:///var/run/docker.sock",
       "docker service create --detach=false --publish 80:80 --publish 443:443 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --network ${var.swarm_network} --name traefik --mode global --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock --mount type=bind,src=/data/folders/swarm/acme.json,dst=/acme.json --mount type=bind,src=/data/folders/swarm/traefik.toml,dst=/etc/traefik/traefik.toml traefik:1.3.0",
-      "docker service create --detach=false --network ${var.monitor_network}  --replicas 1 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name influx --mount type=volume,src=influx,dst=/var/lib/influxdb --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock influxdb",
-      "docker exec `docker ps | grep -i influx | awk '{print $1}'` influx -execute 'CREATE DATABASE cadvisor'",
-      "docker service create --detach=false --hostname '{{.Node.ID}}' --network ${var.monitor_network} --name cadvisor --restart-delay 30s --restart-condition on-failure --mode global --mount type=bind,source=/var/run,target=/var/run,readonly=false --mount type=bind,source=/,target=/rootfs,readonly=true --mount type=bind,source=/sys,target=/sys,readonly=true --mount type=bind,source=/var/lib/docker,target=/var/lib/docker,readonly=true  google/cadvisor:canary -logtostderr -docker_only -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=influx:8086",
-      "docker service create --detach=false --label traefik.port=3000 --label traefik.enable=true --label traefik.backend=grafana --network ${var.monitor_network} --network ${var.swarm_network} --replicas 1 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name grafana --mount type=volume,src=grafana,dst=/var/lib/grafana grafana/grafana"
+      "docker service create --detach=false --network ${var.monitor_network}  --replicas 1 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name influx --mount type=volume,src=influx,dst=/var/lib/influxdb influxdb:alpine",
+      "docker exec `docker ps | grep -i influx | awk '{print $1}'` influx -execute \"CREATE DATABASE telegraf\"",
+      "docker exec `docker ps | grep -i influx | awk '{print $1}'` influx -execute \"CREATE USER ${var.influx_username} WITH PASSWORD '${var.influx_password}' WITH ALL PRIVILEGES\"",
+      "docker service update --env-add 'INFLUXDB_HTTP_AUTH_ENABLED=true' influx",
+      "docker service create --detach=false --hostname '{{.Node.ID}}' --network ${var.monitor_network} --name telegraf --restart-delay 30s --restart-condition on-failure --mode global -e 'HOST_PROC=/rootfs/proc', -e 'HOST_PROC=/rootfs/proc' -e 'HOST_ETC=/rootfs/etc' --mount type=bind,src=/data/folders/swarm/telegraf.conf,dst=/etc/telegraf/telegraf.conf,readonly=true --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock,readonly=true --mount type=bind,src=/sys,dst=/rootfs/sys,readonly=true --mount type=bind,src=/proc,dst=/rootfs/proc,readonly=true --mount type=bind,src=/etc,dst=/rootfs/etc --mount type=bind,src=/var/run/utmp,dst=/var/run/utmp,readonly=true telegraf:alpine",
+      "docker service create --detach=false --label traefik.port=8888 --label traefik.enable=true --label traefik.docker.network=proxy --label traefik.backend=chronograf --network ${var.swarm_network} --network monitor ${var.monitor_network} --replicas 1 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name chronograf --mount type=volume,src=chronograf,dst=/var/lib/chronograf -e 'INFLUXDB_URL=http://influx:8086' -e 'INFLUXDB_USERNAME=${var.influx_username}' -e 'INFLUXDB_PASSWORD=${var.influx_password}' -e 'KAPACITOR_URL=http://kapacitor:9092' -e 'REPORTING_DISABLED' chronograf:alpine  --kapacitor-url=http://kapacitor:9092  --reporting-disabled",
+      "docker service create --detach=false --network ${var.monitor_network} --replicas 1 --restart-delay 30s --restart-condition on-failure --constraint 'node.role == manager' --name kapacitor -e KAPACITOR_INFLUXDB_0_URLS_0=http://influx:8086 --mount type=bind,src=/data/folders/swarm/kapacitor.conf,dst=/etc/kapacitor/kapacitor.conf,readonly=true kapacitor:alpine"
     ]
   }
 }
