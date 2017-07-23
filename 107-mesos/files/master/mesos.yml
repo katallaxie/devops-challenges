@@ -1,0 +1,50 @@
+version: "3.2"
+services:
+  master:
+    image: pixelmilk/mesos-master:1.3.0-2.0.3
+    depends_on:
+      - exhibitor
+    env_file: master.env
+    networks:
+      - mesos
+    ports:
+      - 5050:5050
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+  slave:
+    image: pixelmilk/mesos-agent:1.3.0-2.0.3
+    depends_on:
+      - master
+    env_file: slave.env
+    networks:
+      - mesos
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+  marathon:
+    image: mesosphere/marathon
+    command: --master zk://exhibitor:2181/mesos --zk zk://exhibitor:2181/marathon
+    depends_on:
+      - master
+    networks:
+      - mesos
+    ports:
+      - 8080:8080
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  mesos:
+    external: true

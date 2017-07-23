@@ -4,7 +4,7 @@ Documentation=http://docs.weave.works/weave/latest_release/
 Requires=docker.service
 After=docker.service
 [Service]
-EnvironmentFile=-/etc/sysconfig/weave
+EnvironmentFile=-/etc/default/weave
 ExecStartPre=/usr/local/bin/weave launch --no-restart $PEERS
 ExecStart=/usr/bin/docker attach weave
 ExecStop=/usr/local/bin/weave stop

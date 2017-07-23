@@ -1,5 +1,5 @@
 variable "mesos_masters" {
-  default     = "1"
+  default     = "2"
   description = "Number of Mesos Masters"
 }
 
@@ -30,6 +30,11 @@ variable "weave_network" {
 
 variable "weave_password" {
   default     = "SWaTytSX7RDlvEKpTmc9YM3Un0UgHyHeqJBZOLYfLHaE5u3zzY"
+  description = ""
+}
+
+variable "sync_shared_secret" {
+  default     = "AABPJEAHPEFQ4IZCHP63BYVQJ2NRBPUIK"
   description = ""
 }
 
