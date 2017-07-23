@@ -1,0 +1,10 @@
+variable "dynamic_ip" {}
+variable "enable_ipv6" {}
+variable "private_key" {}
+variable "image" {}
+variable "type" {}
+variable "count" {}
+variable "jump_host" {}
+variable "sync_shared_secret" {}
+variable "security_group" {}
+variable "weave_password" {}
