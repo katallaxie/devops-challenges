@@ -60,13 +60,6 @@ resource "scaleway_server" "jump_host" {
     destination = "/etc/iptables/rules.v6"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "curl -fsSL https://raw.githubusercontent.com/CWSpear/local-persist/master/scripts/install.sh | sudo bash",
-      "shutdown -r now"
-    ]
-  }
-
   provisioner "file" {
     content     = "${data.template_file.sync_config.rendered}"
     destination = "/data/sync.conf"
@@ -74,10 +67,8 @@ resource "scaleway_server" "jump_host" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker network create --driver overlay --opt encrypted ${var.sync_network}",
-      "docker network create --driver overlay --opt encrypted ${var.mesos_network}",
-      "docker service create --detach=false --restart-delay 30s --restart-condition on-failure --name watchtower --mode global --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock centurylink/watchtower --cleanup",
-      "docker service create --detach=false --restart-delay 30s --restart-condition on-failure --name sync --mode global --network ${var.sync_network} --mount type=bind,source=/data,destination=/mnt/sync resilio/sync"
+      "curl -fsSL https://raw.githubusercontent.com/CWSpear/local-persist/master/scripts/install.sh | sudo bash",
+      "shutdown -r now"
     ]
   }
 }

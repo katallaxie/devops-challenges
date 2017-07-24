@@ -1,11 +1,9 @@
 variable "dynamic_ip" {}
 variable "enable_ipv6" {}
 variable "image" {}
-variable "mesos_network" {}
 variable "private_key" {}
 variable "security_group" {}
 variable "swarm_managers" {}
-variable "sync_network" {}
 variable "sync_shared_secret" {}
 variable "type" {}
 variable "jump_host" {}

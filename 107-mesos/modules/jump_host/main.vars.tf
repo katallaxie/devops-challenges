@@ -1,9 +1,7 @@
 variable "type" {}
 variable "sync_shared_secret" {}
-variable "sync_network" {}
 variable "security_group" {}
 variable "private_key" {}
-variable "mesos_network" {}
 variable "image" {}
 variable "enable_ipv6" {}
 variable "dynamic_ip" {}
