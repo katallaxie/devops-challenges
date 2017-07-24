@@ -1,7 +1,3 @@
-variable "swarm_ports" {
-  default = [2377, 7946, 4789]
-}
-
 resource "scaleway_security_group" "swarm" {
   name        = "Mesos Swarm Security Group"
   description = "Swarm security group"

@@ -1,23 +1,3 @@
-variable "dynamic_ip" {}
-variable "enable_ipv6" {}
-variable "image" {}
-variable "mesos_network" {}
-variable "private_key" {}
-variable "security_group" {}
-variable "swarm_managers" {}
-variable "sync_network" {}
-variable "sync_shared_secret" {}
-variable "type" {}
-variable "jump_host" {}
-
-data "template_file" "sync_config" {
-  template = "${file("${path.root}/files/sync.conf.tpl")}"
-
-  vars {
-    shared_secret  = "${var.sync_shared_secret}"
-  }
-}
-
 resource "scaleway_server" "manager" {
   count = "${var.swarm_managers}"
   name  = "swarm-manager-${count.index + 1}"
@@ -96,12 +76,4 @@ resource "scaleway_server" "manager" {
     ]
   }
 
-}
-
-output "public_ips" {
-  value = ["${scaleway_server.manager.*.public_ip}"]
-}
-
-output "private_ips" {
-  value = ["${scaleway_server.manager.*.private_ip}"]
 }

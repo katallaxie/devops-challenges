@@ -1,0 +1,13 @@
+variable "swarm_managers" {}
+variable "dynamic_ip" {}
+variable "enable_ipv6" {}
+variable "private_key" {}
+variable "image" {}
+variable "type" {}
+variable "security_group" {}
+variable "swarm_network" {}
+variable "sync_network" {}
+variable "traefik_email" {}
+variable "traefik_domain" {}
+variable "sync_shared_secret" {}
+variable "monitor_network" {}

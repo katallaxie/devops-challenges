@@ -4,12 +4,12 @@ variable "region" {
 }
 
 variable "swarm_workers" {
-  default     = "0"
+  default     = "3"
   description = "Number of Swarm workers to launch"
 }
 
 variable "swarm_managers" {
-  default     = "1"
+  default     = "2"
   description = "Number of Swarm managers to launch"
 }
 

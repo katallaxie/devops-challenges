@@ -1,23 +1,5 @@
-variable "type" {}
-variable "sync_shared_secret" {}
-variable "sync_network" {}
-variable "security_group" {}
-variable "private_key" {}
-variable "mesos_network" {}
-variable "image" {}
-variable "enable_ipv6" {}
-variable "dynamic_ip" {}
-
 resource "scaleway_ip" "jump_host" {
   server = "${scaleway_server.jump_host.id}"
-}
-
-data "template_file" "sync_config" {
-  template = "${file("${path.root}/files/sync.conf.tpl")}"
-
-  vars {
-    shared_secret  = "${var.sync_shared_secret}"
-  }
 }
 
 resource "scaleway_server" "jump_host" {
@@ -98,12 +80,4 @@ resource "scaleway_server" "jump_host" {
       "docker service create --detach=false --restart-delay 30s --restart-condition on-failure --name sync --mode global --network ${var.sync_network} --mount type=bind,source=/data,destination=/mnt/sync resilio/sync"
     ]
   }
-}
-
-output "public_ip" {
-  value = "${scaleway_server.jump_host.public_ip}"
-}
-
-output "private_ip" {
-  value = "${scaleway_server.jump_host.private_ip}"
 }

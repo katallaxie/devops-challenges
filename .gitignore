@@ -1,5 +1,6 @@
 results/
 .terraform
+.terraform.*
 terraform.tfstate*
 *_rsa
 *_pub

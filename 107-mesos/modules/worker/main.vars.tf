@@ -1,0 +1,10 @@
+variable "dynamic_ip" {}
+variable "enable_ipv6" {}
+variable "image" {}
+variable "private_key" {}
+variable "swarm_workers" {}
+variable "jump_host" {}
+variable "type" {}
+variable "security_group" {}
+variable "sync_shared_secret" {}
+variable "mesos_network" {}

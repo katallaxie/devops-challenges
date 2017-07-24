@@ -1,22 +1,3 @@
-variable "dynamic_ip" {}
-variable "enable_ipv6" {}
-variable "image" {}
-variable "private_key" {}
-variable "swarm_workers" {}
-variable "jump_host" {}
-variable "type" {}
-variable "security_group" {}
-variable "sync_shared_secret" {}
-variable "mesos_network" {}
-
-data "template_file" "sync_config" {
-  template = "${file("${path.root}/files/sync.conf.tpl")}"
-
-  vars {
-    shared_secret  = "${var.sync_shared_secret}"
-  }
-}
-
 resource "scaleway_server" "worker" {
   count               = "${var.swarm_workers}"
   name                = "swarm-worker-${count.index + 1}"
